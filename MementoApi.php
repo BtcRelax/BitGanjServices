@@ -2,7 +2,8 @@
 require 'vendor/autoload.php';
 use GuzzleHttp\Client;
 
-class MementoApi  {
+
+class  MementoApi  {
   protected $serverUrl;
   protected $serverPort;
   protected $session = null;
@@ -18,6 +19,10 @@ class MementoApi  {
     return $this->lastError;
   }
   
+  function getLibraiesList() {  
+    return $this->LibrariesList;
+  }
+    
   function getLibraries() {
     $result = false;
     if ($this->isInited()) {
