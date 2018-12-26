@@ -1,9 +1,24 @@
 {
-    "name": "cabox/workspace",
+    "name": "btcrelax/services-api",
+    "description": "Library to control exteranal systems",
+    "type": "library",
+    "authors": [
+        {
+            "name": "stgodjah",
+            "email": "godjah@bitganj.website"
+        }
+    ],
+    "minimum-stability": "dev",
     "require": {
         "guzzlehttp/guzzle": "^6.0"
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^6.0"
+    },
+    "autoload":{
+    "psr-0":{
+        "BtcRelax":"src/"
+        }
     }
 }
+
