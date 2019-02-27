@@ -183,7 +183,8 @@ class EasyPayApi {
                 $result = true;
             }
         } catch (\GuzzleHttp\Exception\RequestException $gexc) {
-                $this->Last_error = \sprintf('Error on getting token:%s', $gexc->getMessage());
+            $vResponse = $gexc->response();
+            $this->Last_error = \sprintf('Error on getting token:%s', $vResponse->getMessage());
         }
         return $result;
     }
