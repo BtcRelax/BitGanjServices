@@ -134,13 +134,6 @@ class EasyPayApi {
         return $result;
     }
 
-//    public function actionAddWallet($pWalletName) {
-//        $initResult = $this->init();
-//        if ($initResult) {
-//            $initResult = $this->addWallet($pWalletName);
-//        }
-//        return $initResult;
-//    }
     
     
     public function actionNewWallet($pNewWalletName)
@@ -190,13 +183,8 @@ class EasyPayApi {
                 $result = true;
             }
         } catch (\GuzzleHttp\Exception\RequestException $gexc) {
-            //\BtcRelax\Log::general($gexc, \BtcRelax\Log::ERROR);
-                //$this->response(\sprintf('Child request error:%s', $gexc->getMessage() ),$gexc->getCode() );
                 $this->Last_error = \sprintf('Error on getting token:%s', $gexc->getMessage());
         }
-        //catch (Exception $e) {
-        //    $this->Last_error = $e->getMessage();
-        //}
         return $result;
     }
 
@@ -214,13 +202,8 @@ class EasyPayApi {
                 $result = true;
             }
         } catch (\GuzzleHttp\Exception\RequestException $gexc) {
-            //\BtcRelax\Log::general($gexc, \BtcRelax\Log::ERROR);
-                //$this->response(\sprintf('Child request error:%s', $gexc->getMessage() ),$gexc->getCode() );
                 $this->Last_error = \sprintf('Error getting session:%s', $gexc->getMessage());
         }
-        //catch (\GuzzleHttp\Exception $e) {
-        //    $this->Last_error = $e->getMessage();
-        //}
         return $result;
     }
 
