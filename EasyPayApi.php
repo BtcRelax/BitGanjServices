@@ -36,6 +36,7 @@ class EasyPayApi {
         }
         $this->setIsHideMainWallet(true);
     }
+    
     function getProxyServer() {
         return $this->ProxyServer;
     }
@@ -179,12 +180,17 @@ class EasyPayApi {
             $client = new \GuzzleHttp\Client(['base_uri' => self::BASE_URL]);
             $vReqId = $this->getRequestedSessionId();
             $vPageId = $this->getPageId();
-            $response = $client->request('POST', '/api/token', [
+            $vRequestParams = [
                 'body' => $payload,
                 'headers' => ['User-Agent' => self::USER_AGENT, 'Accept' => 'application/json',
                     'AppId' => self::APP_ID, 'No-Authentication' => true,
                     'PartnerKey' => self::PARTNER_KEY, 'RequestedSessionId' => $vReqId,
-                    'PageId' => $vPageId, 'Locale' => 'Ua']]);
+                    'PageId' => $vPageId, 'Locale' => 'Ua']];
+            $vProxy = $this->getProxyServer();
+            if (!empty($vProxy)) {
+                $vRequestParams += ['proxy' => $vProxy ];
+            }
+            $response = $client->request('POST', '/api/token', $vRequestParams );
             $code = $response->getStatusCode();
             if ($code === 200) {
                 $this->processResponse($response);
