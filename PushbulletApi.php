@@ -9,9 +9,10 @@ class PushbulletApi  {
   protected $lastError = '';
   protected $me;
   protected $token;
+  protected $isInited = false;
   
   function __construct() {
-   }
+  }
 
   function getLastError() {
     return $this->lastError;
@@ -22,27 +23,29 @@ class PushbulletApi  {
       return $this->me;
   }
   
+  function getIsInited():bool
+  {
+      return $this->isInited;
+  }
   
   function init(string $pToken)  {
-    $result = false;
-    $client = new \GuzzleHttp\Client();
+    $this->isInited = false;
+    $client = new \GuzzleHttp\Client(['http_errors' => false]);
     $requestURI = \sprintf("%s/users/me", $this->serverUrl );
     $response = $client->request('GET', $requestURI , [
-        'headers' => [ 'Access-Token' => $pToken ]
-        ]);
-    if ( $response->getStatusCode() === 200)
-    {
-        $json = $response->getBody();
-        $this->me = \GuzzleHttp\json_decode($json, true);
-        $this->token = $pToken;
-        $result = true;
-    } else { $this->lastError = \sprint("Server return code:%s", $response->getStatusCode()); };
-    return $result;
+        'headers' => [ 'Access-Token' => $pToken ]]);
+            if ( $response->getStatusCode() === 200) {
+                $json = $response->getBody();
+                $this->me = \GuzzleHttp\json_decode($json, true);
+                $this->token = $pToken;
+                $this->isInited = true;
+            } else { $this->lastError = \sprintf("Server return code:%s", $response->getStatusCode()); }        
+    return $this->isInited;
   }
   
   function pushMessage(string $message) {
     $result = false;
-    $client = new \GuzzleHttp\Client();    
+    $client = new \GuzzleHttp\Client(['http_errors' => false]);    
     $json->body = $message;
     $json->title = 'BitGanj Shop';
     $json->type = 'note';
