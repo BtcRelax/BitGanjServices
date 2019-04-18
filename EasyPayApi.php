@@ -9,6 +9,7 @@ class EasyPayApi {
     const USER_AGENT = 'okhttp/3.9.0';
     const PARTNER_KEY = 'easypay-v2-android';
 
+    private $AppId = '';
     private $RequestedSessionId;
     private $PageId;
     private $LastError = '';
@@ -36,10 +37,7 @@ class EasyPayApi {
         }
         $this->setIsHideMainWallet(true);
     }
-<<<<<<< HEAD
     
-=======
->>>>>>> refs/heads/master
     function getProxyServer() {
         return $this->ProxyServer;
     }
@@ -188,16 +186,12 @@ class EasyPayApi {
                 'headers' => ['User-Agent' => self::USER_AGENT, 'Accept' => 'application/json',
                     'AppId' => self::APP_ID, 'No-Authentication' => true,
                     'PartnerKey' => self::PARTNER_KEY, 'RequestedSessionId' => $vReqId,
-<<<<<<< HEAD
                     'PageId' => $vPageId, 'Locale' => 'Ua']];
             $vProxy = $this->getProxyServer();
             if (!empty($vProxy)) {
                 $vRequestParams += ['proxy' => $vProxy ];
-            };
+            }
             $response = $client->request('POST', '/api/token', $vRequestParams );
-=======
-                    'PageId' => $vPageId, 'Locale' => 'Ua']]);
->>>>>>> refs/heads/master
             $code = $response->getStatusCode();
             if ($code === 200) {
                 $this->processResponse($response);
@@ -287,6 +281,19 @@ class EasyPayApi {
         $initResult = $this->init();
         if ($initResult) {
             $result = $this->getWallets();
+        }
+        return $result;
+    }
+    
+    public function actionGetAccountBallance()
+    {
+        $result = 0;
+        if ($this->actionGetWallets())
+        {
+            foreach ($this->Wallets as $cWallet) {
+                $result = $result + $cWallet['balance'];
+            }
+            $this->setLast_error(null);
         }
         return $result;
     }
