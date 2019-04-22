@@ -50,9 +50,9 @@ class LHCApi {
         global  $core;
         $this->Core = $core;
 		if  (defined ('LHC_DEFAULT_DEPARTMENT')) 
-		{ $this->Department = LHC_DEFAULT_DEPARTMENT; };
+		{ $this->setDepartment(LHC_DEFAULT_DEPARTMENT); };
 		if  (defined ('LHC_DEFAULT_THEME_ID'))
-		{ $this->ThemeId = LHC_DEFAULT_THEME_ID; };
+		{ $this->setTheme(LHC_DEFAULT_THEME_ID); };
     }
     
     public function setUserNameAlias ($UserNameAlias) {
@@ -76,6 +76,23 @@ class LHCApi {
     }
     
        
+    
+    public function getTheme() {
+        return $this->ThemeId;
+    }
+    
+    public function getThemeString() {
+        $result = "";
+        if (is_int($this->getTheme())) {
+            $result = \sprintf( "/(theme)/%s" ,$this->getTheme());        
+        };
+        return $result;
+    }
+    
+    public function setTheme($pThemeId) {
+        $this->ThemeId = $pThemeId;
+    }
+    
     
     public function getDepartment() {
         return $this->Department;
@@ -148,7 +165,6 @@ class LHCApi {
     }
 	
 	
-	
 	private function getPaidChat()
 	{
 		$vResult = "";
@@ -186,9 +202,9 @@ class LHCApi {
                             (function() { var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
                             var referrer = (document.referrer) ? encodeURIComponent(document.referrer.substr(document.referrer.indexOf('://')+1)) : '';
                             var location  = (document.location) ? encodeURIComponent(window.location.href.substring(window.location.protocol.length)) : '';
-                            po.src = '%s/index.php/rus/chat/getstatus/(click)/internal/(position)/bottom_right/(ma)/br/(hide_offline)/true/(top)/350/(units)/pixels%s/(theme)/2?r='+referrer+'&l='+location;
+                            po.src = '%s/index.php/rus/chat/getstatus/(click)/internal/(position)/bottom_right/(ma)/br/(hide_offline)/true/(top)/350/(units)/pixels%s%s?r='+referrer+'&l='+location;
                             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);})();</script>", 
-                            $vIdCustomerTitle,$vNeedEncrypt ,$vIdUserName ,$vPaidChat ,$vIdCustomer ,$vIdUserName ,$vServerUrl, $vDepartmentUrl);    
+                            $vIdCustomerTitle,$vNeedEncrypt ,$vIdUserName ,$vPaidChat ,$vIdCustomer ,$vIdUserName ,$vServerUrl, $vDepartmentUrl, $this->getThemeString());    
         return $script ;
     }
     
