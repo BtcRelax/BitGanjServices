@@ -1,9 +1,21 @@
 <?php
 namespace BtcRelax;
 
-class lhSecurity {
-
-    public static $method = 'AES-256-CBC';
+/**
+ * Description of LHCApi
+ *
+ * @author god
+ */
+class LHCApi {
+    protected $Core;
+    protected $CurrentSession = null;
+    protected $User = null;
+    protected $LastError = null;
+    protected $Department = null;
+    protected $OrderId = null;
+	protected $ThemeId = null;
+	protected $UserNameAlias = "";
+	public static $method = 'AES-256-CBC';
     
     
     public static function encrypt(string $data, string $key) : string
@@ -34,27 +46,21 @@ class lhSecurity {
 
 
     }
-}
-
-/**
- * Description of LHCApi
- *
- * @author god
- */
-class LHCApi {
-    protected $Core;
-    protected $CurrentSession = null;
-    protected $User = null;
-    protected $LastError = null;
-    protected $Department = null;
-    protected $OrderId = null;
-	protected $ThemeId = null;
 	
     public function __construct() {
         global  $core;
         $this->Core = $core;
 		$this->Department = LHC_DEFAULT_DEPARTMENT;
 		$this->ThemeId = LHC_DEFAULT_THEME_ID;
+    }
+    
+    public function setUserNameAlias ($UserNameAlias) {
+        $this->UserNameAlias = $UserNameAlias;
+    }
+
+
+    public function getUserNameAlias () {
+        return $this->UserNameAlias;
     }
 
     public function getOrderId() {
@@ -108,7 +114,8 @@ class LHCApi {
                 $vIdCustomer = $vCurrentUser->getIdCustomer();
                 if (!empty($vIdCustomer)) {
                     $vIdUserName = $vCurrentUser->getPropertyValue("alias_nick");
-                    $script = $this->fillChatWidget($vIdCustomer, LHC_ENCRYPT , $vIdUserName, LHC_URL);
+                    $this->setUserNameAlias($vIdUserName);
+                    $script = $this->fillChatWidget($vIdCustomer, LHC_ENCRYPT , LHC_URL);
                     }   
                 }
             }
@@ -137,12 +144,13 @@ class LHCApi {
 		return $vResult;
 	}
 	
-    public function fillChatWidget($vIdCustomer, $vIsEncrypt , $vIdUserName , $vServerUrl ) {
+    public function fillChatWidget($vIdCustomer, $vIsEncrypt , $vServerUrl ) {
        $vNeedEncrypt = boolval($vIsEncrypt);
-	   $vPaidChat = $this->getPaidChat;
+	   $vPaidChat = $this->getPaidChat();
+	   $vIdUserName = $this->getUserNameAlias();
 	//$vDepartmentUrl = $this->getDepartment() === true ? "/(department)/" . $this->getDepartment()  : "";
 	   $vDepartmentUrl = "/(department)/" . $this->getDepartment() ;        
-       $vIdCustomerTitle  = $vNeedEncrypt === true ? \BtcRelax\lhSecurity::encrypt($vIdCustomer,'d-fD_f90sF_Sdf0sdf_SDFSDF)SDF_SDF_SD)F_F') : $vIdCustomer  ; 
+       $vIdCustomerTitle  = $vNeedEncrypt === true ? \BtcRelax\LHCApi::encrypt($vIdCustomer,'d-fD_f90sF_Sdf0sdf_SDFSDF)SDF_SDF_SD)F_F') : $vIdCustomer  ; 
        $script = \sprintf("<script type=\"text/javascript\">var LHCChatOptions = {};
                             LHCChatOptions.opt = {widget_height:340,widget_width:300,popup_height:520,popup_width:500,domain:'bitganj.website'};
                             LHCChatOptions.attr = new Array();
