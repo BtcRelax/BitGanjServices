@@ -12,7 +12,6 @@ class LHCApi {
     protected $User = null;
     protected $LastError = null;
     protected $Department = null;
-    protected $OrderId = null;
 	protected $ThemeId = null;
 	protected $UserNameAlias = "";
 	public static $method = 'AES-256-CBC';
@@ -50,8 +49,10 @@ class LHCApi {
     public function __construct() {
         global  $core;
         $this->Core = $core;
-		$this->Department = LHC_DEFAULT_DEPARTMENT;
-		$this->ThemeId = LHC_DEFAULT_THEME_ID;
+		if  (defined ('LHC_DEFAULT_DEPARTMENT')) 
+		{ $this->Department = LHC_DEFAULT_DEPARTMENT; };
+		if  (defined ('LHC_DEFAULT_THEME_ID'))
+		{ $this->ThemeId = LHC_DEFAULT_THEME_ID; };
     }
     
     public function setUserNameAlias ($UserNameAlias) {
@@ -64,17 +65,31 @@ class LHCApi {
     }
 
     public function getOrderId() {
-        return $this->OrderId;
+		$vOM = \BtcRelax\Core::createOM();
+		$result = $vOM->getActualOrder();
+		if (FALSE !== $result ) {
+			if (is_int($result->getIdOrder())) {
+				$result =  $result->getIdOrder();
+			} else { $result = false; };
+		};
+		return $result;
     }
     
-	public function setOrderId($OrderId) {
-        $this->OrderId = $OrderId;
-    }
        
     
     public function getDepartment() {
         return $this->Department;
     }
+    
+    public function getDepartmentString()
+    {
+        $result = "";
+        if (is_int($this->getDepartment())) {
+            $result = \sprintf( "/(department)/%s" ,$this->getDepartment());        
+        };
+        return $result;
+    }
+    
     public function setDepartment($Department) {
         $this->Department = $Department;
     }
@@ -122,6 +137,7 @@ class LHCApi {
         if (empty($script)) { $script = $this->fillFAQWidget('main', LHC_URL ); }
         return $script ;
     }
+    
     public function fillFAQWidget(string $vIdentifier, string $vServerUrl ) {
         return \sprintf("<script type=\"text/javascript\">
                     var LHCFAQOptions = {status_text:'Вопросы?',url:'',identifier:'%s'};
@@ -131,15 +147,21 @@ class LHCApi {
                     })();</script>", $vIdentifier, $vServerUrl  );
     }
 	
+	
+	
 	private function getPaidChat()
 	{
 		$vResult = "";
-		if (is_int($this->getOrderId()))
+		if (defined ('LHC_SECRET_VALIDATION_HASH'))
 		{
-			$vOrderId = $this->getOrderId();
-			$vSecretValidationHash = 'e3874f6dc621efff146b0db55935fb27c4b5a0e8';
-			$vOrderIdHash = \sha1($vSecretValidationHash.sha1($vSecretValidationHash.$vOrderId));
-			$vResult = \sprintf("LHCChatOptions.attr_paid = {phash:'%s',pvhash:'%s'};", $vOrderId, $vOrderIdHash );
+    		$vOrderId = $this->getOrderId(); 
+    		if (FALSE !== $vOrderId)
+    		{
+    			$vSecretValidationHash = LHC_SECRET_VALIDATION_HASH;
+    			$vOrderIdHash = \sha1($vSecretValidationHash.sha1($vSecretValidationHash.$vOrderId));
+    			$vResult = \sprintf("LHCChatOptions.attr.push({'name':'OrderId','value':'%s', 'type':'hidden', 'size':0,'encrypted':false });", $vOrderId );
+    			$vResult =  \sprintf("%sLHCChatOptions.attr_paid = {phash:'%s',pvhash:'%s'};",$vResult, $vOrderId, $vOrderIdHash );
+    		}		    
 		}
 		return $vResult;
 	}
@@ -148,8 +170,8 @@ class LHCApi {
        $vNeedEncrypt = boolval($vIsEncrypt);
 	   $vPaidChat = $this->getPaidChat();
 	   $vIdUserName = $this->getUserNameAlias();
-	//$vDepartmentUrl = $this->getDepartment() === true ? "/(department)/" . $this->getDepartment()  : "";
-	   $vDepartmentUrl = "/(department)/" . $this->getDepartment() ;        
+	   //$vDepartmentUrl = $this->getDepartment() === true ? "/(department)/" . $this->getDepartment()  : "";
+	   $vDepartmentUrl = $this->getDepartmentString() ;        
        $vIdCustomerTitle  = $vNeedEncrypt === true ? \BtcRelax\LHCApi::encrypt($vIdCustomer,'d-fD_f90sF_Sdf0sdf_SDFSDF)SDF_SDF_SD)F_F') : $vIdCustomer  ; 
        $script = \sprintf("<script type=\"text/javascript\">var LHCChatOptions = {};
                             LHCChatOptions.opt = {widget_height:340,widget_width:300,popup_height:520,popup_width:500,domain:'bitganj.website'};
