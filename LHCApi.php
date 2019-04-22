@@ -147,8 +147,7 @@ class LHCApi {
                             LHCChatOptions.opt = {widget_height:340,widget_width:300,popup_height:520,popup_width:500,domain:'bitganj.website'};
                             LHCChatOptions.attr = new Array();
                             LHCChatOptions.attr.push({'name':'CustomerId','value':'%s','type':'hidden','size':0,'encrypted':%s});
-                            LHCChatOptions.attr_prefill = new Array();
-                            LHCChatOptions.attr_prefill.push({'name':'username','value':'%s'});
+                            LHCChatOptions.attr.push({'name':'username','value':'%s', 'type':'hidden', 'size':0,'encrypted':false });
 							%s
 							LHCChatOptions.attr_online = new Array();
 							LHCChatOptions.attr_online.push({'name':'CustomerId','value':'%s'});
