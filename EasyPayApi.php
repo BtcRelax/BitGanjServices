@@ -24,8 +24,13 @@ class EasyPayApi {
     public $_isHideMainWallet = false;
     public $_localExpires;
 	public $UserAgent = 'okhttp/3.9.0';
-	public $AppId = array ('60e62fd8-4042-49c7-a7b7-c0424e1cc8b9','0716eb6f-23b4-4ac9-99b2-74e1f8ed34ce',
-	'561ef802-0850-4404-90de-2fab7bfc76e5', 'c954eff2-9779-4ade-8723-c4daa7bec606', '05344833-05ca-4599-a282-70c402ed16b0', '60e62fd8-4042-49c7-a7b7-c0424e1cc8b9','0716eb6f-23b4-4ac9-99b2-74e1f8ed34ce', '561ef802-0850-4404-90de-2fab7bfc76e5','c954eff2-9779-4ade-8723-c4daa7bec606', '05344833-05ca-4599-a282-70c402ed16b0','60e62fd8-4042-49c7-a7b7-c0424e1cc8b9', '0716eb6f-23b4-4ac9-99b2-74e1f8ed34ce','561ef802-0850-4404-90de-2fab7bfc76e5', 'c954eff2-9779-4ade-8723-c4daa7bec606', '05344833-05ca-4599-a282-70c402ed16b0', '60e62fd8-4042-49c7-a7b7-c0424e1cc8b9','0716eb6f-23b4-4ac9-99b2-74e1f8ed34ce', '561ef802-0850-4404-90de-2fab7bfc76e5', 'c954eff2-9779-4ade-8723-c4daa7bec606', '05344833-05ca-4599-a282-70c402ed16b0', '561ef802-0850-4404-90de-2fab7bfc76e5', 'c954eff2-9779-4ade-8723-c4daa7bec606', '05344833-05ca-4599-a282-70c402ed16b0', '60e62fd8-4042-49c7-a7b7-c0424e1cc8b9' );
+	public $AppId = array (	'05344833-05ca-4599-a282-70c402ed16b0','0716eb6f-23b4-4ac9-99b2-74e1f8ed34ce',
+	'0944575e-b2bc-4667-8bb8-dacbdabb6c43','a5806a5f-dbb8-496a-a23f-aab6d2fcbce1','c954eff2-9779-4ade-8723-c4daa7bec606', 		'cd7fde18-15db-4d94-a91b-7cf8edd81209','ab5be70d-9de0-44ea-80ce-52fd6f34a5b7','06b8702c-a5e3-451b-bb04-715d0913e6b2',
+	'37919a20-f9b4-4c6c-b255-460972803546','44798190-b837-47e1-881e-fdc6f733f43b','a2b6c187-3068-40a0-a4fe-7979cc918ebb',
+	'932e03be-1e62-4b41-babd-338f6b90af99','05344833-05ca-4599-a282-70c402ed16b0','0716eb6f-23b4-4ac9-99b2-74e1f8ed34ce',
+	'0944575e-b2bc-4667-8bb8-dacbdabb6c43','a5806a5f-dbb8-496a-a23f-aab6d2fcbce1','c954eff2-9779-4ade-8723-c4daa7bec606', 		'cd7fde18-15db-4d94-a91b-7cf8edd81209','ab5be70d-9de0-44ea-80ce-52fd6f34a5b7','06b8702c-a5e3-451b-bb04-715d0913e6b2',
+	'37919a20-f9b4-4c6c-b255-460972803546','44798190-b837-47e1-881e-fdc6f733f43b',
+	'a2b6c187-3068-40a0-a4fe-7979cc918ebb','932e03be-1e62-4b41-babd-338f6b90af99');
 	public $ProxyUrl = '217.27.151.75:3306';
 
     public function __construct($pUser, $pPassword) {
@@ -42,7 +47,7 @@ class EasyPayApi {
 	}
 	
 	public function getAppId() {
-		$vCurrentHour = date('H');
+		$vCurrentHour = intval(date('H'));
 		$vCurrentAppId = $this->AppId[$vCurrentHour];
 		return $vCurrentAppId;
 	}
@@ -187,6 +192,7 @@ class EasyPayApi {
                     'AppId' => $this->getAppId(), 'No-Authentication' => true,
                     'PartnerKey' => self::PartnerKey, 'RequestedSessionId' => $vReqId,
                     'PageId' => $vPageId, 'Locale' => 'Ua'], 'proxy' => $this->getProxyUrl(), 
+			
             ]);
             $code = $response->getStatusCode();
             if ($code === 200) {
