@@ -56,6 +56,10 @@ class EasyPayApi {
 		return $this->ProxyUrl;
 	} 
 
+    public function setProxyUrl($value) {
+        $this->ProxyUrl = $value;        
+    }
+
     public function init() {
         $result = $this->isInited();
         if (!$result) {
