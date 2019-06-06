@@ -135,7 +135,7 @@ class EasyPayApi {
         return $result;
     }
             
-    private function addWallet($pWalletName) {
+    public function addWallet($pWalletName) {
         $result = false;
         try {
             //$payload = \sprintf('color=#D7CCC8&name="%s"', $pWalletName);
