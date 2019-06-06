@@ -37,7 +37,7 @@ class EasyPayApi {
         $this->User = $pUser;
         $this->Password = $pPassword;
         if (empty($pUser) || empty($pPassword)) {
-            throw new \BtcRelax\Exception\AuthentificationCritical("Creating epay api client without login or password");
+            throw new \Exception("Creating epay api client without login or password");
         };
         $this->setIsHideMainWallet(true);
     }
@@ -89,7 +89,7 @@ class EasyPayApi {
         $result = false;
         try {
             $vAuth = \sprintf('%s %s', $this->Token_type, $this->Access_token);
-            $client = new \GuzzleHttp\Client(['base_uri' => self::base_url]);
+            $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
             $vReqId = $this->getRequestedSessionId();
             $vPageId = $this->getPageId();
             $response = $client->request('GET', '/api/wallets/get', [
@@ -126,7 +126,7 @@ class EasyPayApi {
         try {
             //$payload = \sprintf('color=#D7CCC8&name="%s"', $pWalletName);
             $vAuth = \sprintf('%s %s', $this->Token_type, $this->Access_token);
-            $client = new \GuzzleHttp\Client(['base_uri' => self::base_url]);
+            $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
             $vReqId = $this->getRequestedSessionId();
             $vPageId = $this->getPageId();
             $response = $client->request('POST', '/api/wallets/add', [
@@ -183,7 +183,7 @@ class EasyPayApi {
         $result = false;
         try {
             $payload = \sprintf('client_id=easypay-v2-android&grant_type=password&username=%s&password=%s', $this->User, $this->Password);
-            $client = new \GuzzleHttp\Client(['base_uri' => self::base_url]);
+            $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
             $vReqId = $this->getRequestedSessionId();
             $vPageId = $this->getPageId();
             $response = $client->request('POST', '/api/token', [
@@ -209,7 +209,7 @@ class EasyPayApi {
     public function getSession() {
         $result = false;
         try {
-            $client = new \GuzzleHttp\Client(['base_uri' => self::base_url]);
+            $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
             $response = $client->request('POST', '/api/system/createSession', [
                 'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json', 
 				'AppId' => $this->getAppId()]]);
