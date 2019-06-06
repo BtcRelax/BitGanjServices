@@ -31,7 +31,7 @@ class EasyPayApi {
 	'0944575e-b2bc-4667-8bb8-dacbdabb6c43','a5806a5f-dbb8-496a-a23f-aab6d2fcbce1','c954eff2-9779-4ade-8723-c4daa7bec606', 		'cd7fde18-15db-4d94-a91b-7cf8edd81209','ab5be70d-9de0-44ea-80ce-52fd6f34a5b7','06b8702c-a5e3-451b-bb04-715d0913e6b2',
 	'37919a20-f9b4-4c6c-b255-460972803546','44798190-b837-47e1-881e-fdc6f733f43b',
 	'a2b6c187-3068-40a0-a4fe-7979cc918ebb','932e03be-1e62-4b41-babd-338f6b90af99');
-	public $ProxyUrl = '217.27.151.75:3306';
+	public $ProxyUrl = '217.27.151.75:34935';
 
     public function __construct($pUser, $pPassword) {
         $this->User = $pUser;
