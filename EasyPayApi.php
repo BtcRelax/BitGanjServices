@@ -9,7 +9,7 @@ class EasyPayApi {
 
     protected $RequestedSessionId;
     protected $PageId;
-    protected $Last_error = '';
+    protected $LastError = '';
     protected $User;
     protected $Password;
     protected $Access_token;
@@ -88,7 +88,7 @@ class EasyPayApi {
             $currentDT = new \DateTime("now") ;
             $expiresDT = new \DateTime($this->inExpires);
             if ($currentDT <  $expiresDT ) {
-                $this->Last_error = null;
+                $this->LastError = null;
                 $result = true;
             }
         }
@@ -117,7 +117,7 @@ class EasyPayApi {
                 $result = true;
             }
         } catch (Exception $e) {
-            $this->Last_error = $e->getMessage();
+            $this->LastError = $e->getMessage();
         }
         return $result;
     }
@@ -158,11 +158,11 @@ class EasyPayApi {
                 }
                 else
                 {
-                    $this->Last_error = $addResult["error"];
+                    $this->LastError = $addResult["error"];
                 };
             }
         } catch (Exception $e) {
-            $this->Last_error = $e->getMessage();
+            $this->LastError = $e->getMessage();
         }
         return $result;
     }
@@ -188,7 +188,7 @@ class EasyPayApi {
                     . "<script>$( function() \{$( \"#dialog\" ).dialog();} );</script>", $vNewWallet['name'], $vNewWallet['number']);     
         } else {
             $vHtml = \sprintf("<div id=\"dialog\" title=\"Error create wallet!\">
-                            <p>Error message:%s</p></div><script>$( function() \{$( \"#dialog\" ).dialog();} );</script>", $this->getLast_error()); 
+                            <p>Error message:%s</p></div><script>$( function() \{$( \"#dialog\" ).dialog();} );</script>", $this->getLastError()); 
         }
         return $vHtml;        
     }
@@ -211,11 +211,11 @@ class EasyPayApi {
             $code = $response->getStatusCode();
             if ($code === 200) {
                 $this->processResponse($response);
-                $this->Last_error = null;
+                $this->LastError = null;
                 $result = true;
             }
         } catch (\GuzzleHttp\Exception\RequestException $gexc) {
-            $this->Last_error = \sprintf('Error on getting token:%s', $gexc->getMessage());
+            $this->LastError = \sprintf('Error on getting token:%s', $gexc->getMessage());
         }
         return $result;
     }
@@ -231,11 +231,11 @@ class EasyPayApi {
                 $code = $response->getStatusCode();
                 if ($code === 200) {
                     $this->processResponse($response);
-                    $this->Last_error = null;
+                    $this->LastError = null;
                     $result = true;
                 }
             } catch (\GuzzleHttp\Exception\RequestException $gexc) {
-                    $this->Last_error = \sprintf('Error getting session:%s', $gexc->getMessage());
+                    $this->LastError = \sprintf('Error getting session:%s', $gexc->getMessage());
             }
         };
         return $result;
@@ -252,11 +252,11 @@ class EasyPayApi {
                 $code = $response->getStatusCode();
                 if ($code === 200) {
                     $this->processResponse($response);
-                    $this->Last_error = null;
+                    $this->LastError = null;
                     $result = true;
                 }
             } catch (\GuzzleHttp\Exception\RequestException $gexc) {
-                    $this->Last_error = \sprintf('Error creating appid:%s', $gexc->getMessage());
+                    $this->LastError = \sprintf('Error creating appid:%s', $gexc->getMessage());
             };
         };
         return $result;
@@ -332,12 +332,12 @@ class EasyPayApi {
             foreach ($this->Wallets as $cWallet) {
                 if ($cWallet['number'] === $walletAddress ) {
                     $result = $cWallet['balance'];
-                    $this->setLast_error(null);
+                    $this->setLastError(null);
                     return $result;
                 }
             }
         }
-        if (FALSE === $result) { $this->setLast_error("Wallet not found!"); };
+        if (FALSE === $result) { $this->setLastError("Wallet not found!"); };
         return $result;
     }
 
@@ -353,7 +353,7 @@ class EasyPayApi {
             };
             $vHtml .= \sprintf('%s</tbody></table>', $vRows);
         } else {
-            $vHtml = \sprintf("Произошла ошибка:%s", $this->getLast_error());
+            $vHtml = \sprintf("Произошла ошибка:%s", $this->getLastError());
         };
         return $vHtml;
     }
@@ -366,12 +366,12 @@ class EasyPayApi {
         return $this->PageId;
     }
 
-    public function getLast_error() {
-        return $this->Last_error;
+    public function getLastError() {
+        return $this->LastError;
     }
 
-    public function setLast_error($Last_error) {
-        $this->Last_error = $Last_error;
+    public function setLastError($pMessage) {
+        $this->LastError = $pMessage;
     }
 
 }
