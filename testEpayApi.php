@@ -21,8 +21,11 @@ if (isset($_GET["user"]) && isset($_GET["pass"])) {
                     echo \sprintf("Try to create new wallet name:%s\n<br> Got result:%s\n<br>", $vNewName , $vNewWalletInstrumentId );        
                     echo ("Rendering wallets:");
                     echo $vApi->renderGetWallets();
-                    $vNewWalletNumber = $vApi->getWalletByInstrumentId($vNewWalletInstrumentId);
-                    echo (\sprintf("Getting wallet number: %s", $vNewWalletNumber));
+                    $vNewWallet = $vApi->getWalletByInstrumentId($vNewWalletInstrumentId);
+                    $vNewWalletNumber = $vNewWallet['number'];
+                    echo (\sprintf("Getting wallet number: %s\n<br>", $vNewWalletNumber));
+                    $vDeleteResult = $vApi->deleteWalletByNumber($vNewWalletNumber);
+                    echo (\sprintf("Delete wallet by number:%s, result: %s\n<br>",$vNewWalletNumber, $vDeleteResult));
                 }
             }
         } catch (Exception $exc) {
@@ -33,7 +36,7 @@ if (isset($_GET["user"]) && isset($_GET["pass"])) {
   User name:<br>
   <input type="text" name="user" value="380999411601"><br>
   Password:<br>
-  <input type="text" name="pass" value="1TestPass"><br><br>
+  <input type="text" name="pass" value="1TestPass"><br>
   Proxy:<br>
   <input type="text" name="proxy" value="217.27.151.75:34935"><br><br>
     <input type="hidden" name="start_debug" value="1">

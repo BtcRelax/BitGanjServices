@@ -127,7 +127,7 @@ class EasyPayApi {
         if ($result) {
             foreach ($this->Wallets as $value) {
             if ($value['instrumentId'] === $pInstrumentId) {
-                    $result = $value['number'];
+                    $result = $value;
                     break;
                 }
             }
@@ -175,9 +175,44 @@ class EasyPayApi {
                 };
             }
         } catch (Exception $e) {
-            $this->LastError = $e->getMessage();
+            $this->setLastError(\sprintf("Error while creating wallet named:%s with message:%s", $pWalletName, $e->getMessage()));
         }
         return $result;
+    }
+    
+    public function deleteWalletByNumber($pWalletNumber){
+        $result = false;
+        try {
+            $vInstrumentId = $this->getInstrumentIdByWallet($pWalletNumber);
+            if (FALSE != $vInstrumentId) {
+                $vAuth = \sprintf('%s %s', $this->Token_type, $this->Access_token);
+                $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
+                $vReqId = $this->getRequestedSessionId();
+                $vPageId = $this->getPageId();
+                $vURI = \sprintf("/api/wallets/delete/%s",$vInstrumentId);
+                $response = $client->request('DELETE', $vURI, [
+                    'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json',
+                        'AppId' => $this->getCurrentAppId(), 'Authorization' => $vAuth,
+                        'PartnerKey' => self::PartnerKey, 'RequestedSessionId' => $vReqId,
+                        'PageId' => $vPageId, 'Locale' => 'Ua']]);
+                $code = $response->getStatusCode();
+                if ($code === 200) {
+                    $addResult = $this->processAddResponse($response);
+                    if (empty($addResult["error"]))
+                    {
+                        $result = $addResult['instrumentId'];
+                        $this->setLastError();
+                    }
+                    else
+                    {
+                        $this->setLastError(\sprintf("Error while deleting wallet number:%s with message:%s", $pWalletNumber, $addResult["error"]));
+                    };
+                }                
+            } else { $this->setLastError(\sprintf("Cant find instrument id by wallet number:%s",$pWalletNumber); }
+        } catch (Exception $e) {
+            $this->setLastError(\sprintf("Error while deleting wallet number:%s with message:%s", $pWalletNumber, $e->getMessage()));
+        }
+        return $result;        
     }
    
     public function actionNewWallet($pNewWalletName) {
@@ -185,10 +220,11 @@ class EasyPayApi {
         $initResult = $this->init();
         if ($initResult) {
             $vInstrumentId = $this->addWallet($pNewWalletName);
-        }
-        if ($vInstrumentId !== false) {
-            $result = $this->getWalletByInstrumentId($vInstrumentId);
-        }
+            if ($vInstrumentId !== false) {
+                $result = $this->getWalletByInstrumentId($vInstrumentId);
+                $this->setLastError();
+            };
+        };
         return $result;          
     }
      
@@ -383,7 +419,7 @@ class EasyPayApi {
         return $this->LastError;
     }
 
-    public function setLastError($pMessage) {
+    public function setLastError($pMessage = null) {
         $this->LastError = $pMessage;
     }
 
