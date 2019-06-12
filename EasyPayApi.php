@@ -127,13 +127,26 @@ class EasyPayApi {
         if ($result) {
             foreach ($this->Wallets as $value) {
             if ($value['instrumentId'] === $pInstrumentId) {
-                $result = $value;
+                    $result = $value['number'];
                     break;
                 }
             }
         }
         return $result;
     }
+    
+    public function getInstrumentIdByWallet($pWalletNumber) {
+        $result= $this->actionGetWallets();
+        if ($result) {
+            foreach ($this->Wallets as $value) {
+            if ($value['number'] === $pWalletNumber) {
+                    $result = $value['instrumentId'];
+                    break;
+                }
+            }
+        }
+        return $result;        
+    } 
             
     public function addWallet($pWalletName) {
         $result = false;
@@ -344,11 +357,11 @@ class EasyPayApi {
     public function renderGetWallets() {
         if ($this->actionGetWallets()) {
             $vHtml = "<table border = \"1\" width = \"1\" cellspacing = \"3\" cellpadding = \"3\"><thead>";
-            $vHtml .= "<tr><th>Тип кошелька</th><th>Название кошелька</th><th>Номер кошелька</th><th>Балланс кошелька</th></tr></thead><tbody>";
+            $vHtml .= "<tr><th>Тип кошелька</th><th>Instrument Id</th><th>Название кошелька</th><th>Номер кошелька</th><th>Балланс кошелька</th></tr></thead><tbody>";
             $vRows = "";
             foreach ($this->Wallets as $value) {
                 if ($this->isHideMainWallet && $value['walletType'] !== 'Current') {
-                    $vRows .= \sprintf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $value['walletType'] === 'Current' ? 'Основной' : 'Дополнительный', $value['name'], $value['number'], $value['balance']);
+                    $vRows .= \sprintf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $value['walletType'] === 'Current' ? 'Основной' : 'Дополнительный', $value['instrumentId'] , $value['name'], $value['number'], $value['balance']);
                 };
             };
             $vHtml .= \sprintf('%s</tbody></table>', $vRows);

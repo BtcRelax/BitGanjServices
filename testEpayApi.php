@@ -17,10 +17,12 @@ if (isset($_GET["user"]) && isset($_GET["pass"])) {
                 echo \sprintf("Result GetTokenResult:%s\n<br>", $vGetTokenResult);
                 if ($vGetTokenResult) {
                     $vNewName = substr(str_shuffle(md5(time())), 0, 5);
-                    $vNewWalletResult = $vApi->addWallet($vNewName);
-                    echo \sprintf("Try to create new wallet name:%s\n<br> Got result:%s", $vNewName , $vNewWalletResult );        
+                    $vNewWalletInstrumentId = $vApi->addWallet($vNewName);
+                    echo \sprintf("Try to create new wallet name:%s\n<br> Got result:%s\n<br>", $vNewName , $vNewWalletInstrumentId );        
                     echo ("Rendering wallets:");
                     echo $vApi->renderGetWallets();
+                    $vNewWalletNumber = $vApi->getWalletByInstrumentId($vNewWalletInstrumentId);
+                    echo (\sprintf("Getting wallet number: %s", $vNewWalletNumber));
                 }
             }
         } catch (Exception $exc) {
