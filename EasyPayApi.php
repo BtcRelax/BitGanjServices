@@ -24,13 +24,6 @@ class EasyPayApi {
     protected $_isHideMainWallet = false;
     protected $_localExpires;
 	protected $UserAgent = 'okhttp/3.9.0';
-	protected $AppId = array (	'05344833-05ca-4599-a282-70c402ed16b0','0716eb6f-23b4-4ac9-99b2-74e1f8ed34ce',
-	'0944575e-b2bc-4667-8bb8-dacbdabb6c43','a5806a5f-dbb8-496a-a23f-aab6d2fcbce1','c954eff2-9779-4ade-8723-c4daa7bec606', 		'cd7fde18-15db-4d94-a91b-7cf8edd81209','ab5be70d-9de0-44ea-80ce-52fd6f34a5b7','06b8702c-a5e3-451b-bb04-715d0913e6b2',
-	'37919a20-f9b4-4c6c-b255-460972803546','44798190-b837-47e1-881e-fdc6f733f43b','a2b6c187-3068-40a0-a4fe-7979cc918ebb',
-	'932e03be-1e62-4b41-babd-338f6b90af99','05344833-05ca-4599-a282-70c402ed16b0','0716eb6f-23b4-4ac9-99b2-74e1f8ed34ce',
-	'0944575e-b2bc-4667-8bb8-dacbdabb6c43','a5806a5f-dbb8-496a-a23f-aab6d2fcbce1','c954eff2-9779-4ade-8723-c4daa7bec606', 		'cd7fde18-15db-4d94-a91b-7cf8edd81209','ab5be70d-9de0-44ea-80ce-52fd6f34a5b7','06b8702c-a5e3-451b-bb04-715d0913e6b2',
-	'37919a20-f9b4-4c6c-b255-460972803546','44798190-b837-47e1-881e-fdc6f733f43b',
-	'a2b6c187-3068-40a0-a4fe-7979cc918ebb','932e03be-1e62-4b41-babd-338f6b90af99');
 	protected $ProxyUrl = '217.27.151.75:34935';
     protected $CurrentAppId = null;
 
@@ -47,12 +40,6 @@ class EasyPayApi {
 		return $this->UserAgent;
 	}
 	
-	public function getAppId() {
-		$vCurrentHour = intval(date('H'));
-		$vCurrentAppId = $this->AppId[$vCurrentHour];
-		return $vCurrentAppId;
-	}
-	   
 	public function getCurrentAppId() {
 		return $this->CurrentAppId;
 	} 
@@ -125,20 +112,34 @@ class EasyPayApi {
     public function getWalletByInstrumentId($pInstrumentId)    {
         $result= $this->actionGetWallets();
         if ($result) {
+            $result = false;
             foreach ($this->Wallets as $value) {
             if ($value['instrumentId'] === $pInstrumentId) {
-                $result = $value;
+                    $result = $value;
                     break;
                 }
             }
         }
         return $result;
     }
+    
+    public function getWalletByNumber($pWalletNumber) {
+        $result= $this->actionGetWallets();
+        if ($result) {
+            $result = false;
+            foreach ($this->Wallets as $value) {
+            if ($value['number'] === $pWalletNumber) {
+                    $result = $value;
+                    break;
+                }
+            }
+        }
+        return $result;        
+    } 
             
     public function addWallet($pWalletName) {
         $result = false;
         try {
-            //$payload = \sprintf('color=#D7CCC8&name="%s"', $pWalletName);
             $vAuth = \sprintf('%s %s', $this->Token_type, $this->Access_token);
             $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
             $vReqId = $this->getRequestedSessionId();
@@ -162,9 +163,37 @@ class EasyPayApi {
                 };
             }
         } catch (Exception $e) {
-            $this->LastError = $e->getMessage();
+            $this->setLastError(\sprintf("Error while creating wallet named:%s with message:%s", $pWalletName, $e->getMessage()));
         }
         return $result;
+    }
+    
+    public function deleteWalletByNumber($pWalletNumber){
+        $result = false;
+        try {
+            $vWallet = $this->getWalletByNumber($pWalletNumber);
+            if (FALSE != $vWallet) {
+                $vWalletId = $vWallet['id'];
+                $vAuth = \sprintf('%s %s', $this->Token_type, $this->Access_token);
+                $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
+                $vReqId = $this->getRequestedSessionId();
+                $vPageId = $this->getPageId();
+                $vURI = \sprintf("/api/wallets/delete/%s",$vWalletId);
+                $response = $client->request('DELETE', $vURI, [
+                    'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json',
+                        'AppId' => $this->getCurrentAppId(), 'Authorization' => $vAuth,
+                        'PartnerKey' => self::PartnerKey, 'RequestedSessionId' => $vReqId,
+                        'PageId' => $vPageId, 'Locale' => 'Ua']]);
+                $code = $response->getStatusCode();
+                if ($code === 200) {
+                        $result = true;
+                        $this->setLastError();
+                } else { $this->setLastError(\sprintf("Error while deleting wallet number:%s with message:%s", $pWalletNumber, $response->getBody())); };              
+            } else { $this->setLastError(\sprintf("Cant find instrument id by wallet number:%s",$pWalletNumber)); }
+        } catch (Exception $e) {
+            $this->setLastError(\sprintf("Error while deleting wallet number:%s with message:%s", $pWalletNumber, $e->getMessage()));
+        }
+        return $result;        
     }
    
     public function actionNewWallet($pNewWalletName) {
@@ -172,10 +201,11 @@ class EasyPayApi {
         $initResult = $this->init();
         if ($initResult) {
             $vInstrumentId = $this->addWallet($pNewWalletName);
-        }
-        if ($vInstrumentId !== false) {
-            $result = $this->getWalletByInstrumentId($vInstrumentId);
-        }
+            if ($vInstrumentId !== false) {
+                $result = $this->getWalletByInstrumentId($vInstrumentId);
+                $this->setLastError();
+            };
+        };
         return $result;          
     }
      
@@ -344,11 +374,11 @@ class EasyPayApi {
     public function renderGetWallets() {
         if ($this->actionGetWallets()) {
             $vHtml = "<table border = \"1\" width = \"1\" cellspacing = \"3\" cellpadding = \"3\"><thead>";
-            $vHtml .= "<tr><th>Тип кошелька</th><th>Название кошелька</th><th>Номер кошелька</th><th>Балланс кошелька</th></tr></thead><tbody>";
+            $vHtml .= "<tr><th>Тип кошелька</th><th>Instrument Id</th><th>Название кошелька</th><th>Номер кошелька</th><th>Балланс кошелька</th></tr></thead><tbody>";
             $vRows = "";
             foreach ($this->Wallets as $value) {
                 if ($this->isHideMainWallet && $value['walletType'] !== 'Current') {
-                    $vRows .= \sprintf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $value['walletType'] === 'Current' ? 'Основной' : 'Дополнительный', $value['name'], $value['number'], $value['balance']);
+                    $vRows .= \sprintf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $value['walletType'] === 'Current' ? 'Основной' : 'Дополнительный', $value['instrumentId'] , $value['name'], $value['number'], $value['balance']);
                 };
             };
             $vHtml .= \sprintf('%s</tbody></table>', $vRows);
@@ -370,7 +400,7 @@ class EasyPayApi {
         return $this->LastError;
     }
 
-    public function setLastError($pMessage) {
+    public function setLastError($pMessage = null) {
         $this->LastError = $pMessage;
     }
 
