@@ -7,37 +7,38 @@ class EasyPayApi {
     const base_url = 'https://api.easypay.ua/';
     const PartnerKey = 'easypay-v2-android';
 
-    public $RequestedSessionId;
-    public $PageId;
-    public $Last_error = '';
-    public $User;
-    public $Password;
-    public $Access_token;
-    public $Token_type;
-    public $Expires;
-    public $Refresh_token;
-    public $UserId;
-    public $ClientId;
-    public $inIssued;
-    public $inExpires;
-    public $Wallets;
-    public $_isHideMainWallet = false;
-    public $_localExpires;
-	public $UserAgent = 'okhttp/3.9.0';
-	public $AppId = array (	'05344833-05ca-4599-a282-70c402ed16b0','0716eb6f-23b4-4ac9-99b2-74e1f8ed34ce',
+    protected $RequestedSessionId;
+    protected $PageId;
+    protected $LastError = '';
+    protected $User;
+    protected $Password;
+    protected $Access_token;
+    protected $Token_type;
+    protected $Expires;
+    protected $Refresh_token;
+    protected $UserId;
+    protected $ClientId;
+    protected $inIssued;
+    protected $inExpires;
+    protected $Wallets;
+    protected $_isHideMainWallet = false;
+    protected $_localExpires;
+	protected $UserAgent = 'okhttp/3.9.0';
+	protected $AppId = array (	'05344833-05ca-4599-a282-70c402ed16b0','0716eb6f-23b4-4ac9-99b2-74e1f8ed34ce',
 	'0944575e-b2bc-4667-8bb8-dacbdabb6c43','a5806a5f-dbb8-496a-a23f-aab6d2fcbce1','c954eff2-9779-4ade-8723-c4daa7bec606', 		'cd7fde18-15db-4d94-a91b-7cf8edd81209','ab5be70d-9de0-44ea-80ce-52fd6f34a5b7','06b8702c-a5e3-451b-bb04-715d0913e6b2',
 	'37919a20-f9b4-4c6c-b255-460972803546','44798190-b837-47e1-881e-fdc6f733f43b','a2b6c187-3068-40a0-a4fe-7979cc918ebb',
 	'932e03be-1e62-4b41-babd-338f6b90af99','05344833-05ca-4599-a282-70c402ed16b0','0716eb6f-23b4-4ac9-99b2-74e1f8ed34ce',
 	'0944575e-b2bc-4667-8bb8-dacbdabb6c43','a5806a5f-dbb8-496a-a23f-aab6d2fcbce1','c954eff2-9779-4ade-8723-c4daa7bec606', 		'cd7fde18-15db-4d94-a91b-7cf8edd81209','ab5be70d-9de0-44ea-80ce-52fd6f34a5b7','06b8702c-a5e3-451b-bb04-715d0913e6b2',
 	'37919a20-f9b4-4c6c-b255-460972803546','44798190-b837-47e1-881e-fdc6f733f43b',
 	'a2b6c187-3068-40a0-a4fe-7979cc918ebb','932e03be-1e62-4b41-babd-338f6b90af99');
-	public $ProxyUrl = '217.27.151.75:3306';
+	protected $ProxyUrl = '217.27.151.75:34935';
+    protected $CurrentAppId = null;
 
     public function __construct($pUser, $pPassword) {
         $this->User = $pUser;
         $this->Password = $pPassword;
         if (empty($pUser) || empty($pPassword)) {
-            throw new \BtcRelax\Exception\AuthentificationCritical("Creating epay api client without login or password");
+            throw new \Exception("Creating epay api client without login or password");
         };
         $this->setIsHideMainWallet(true);
     }
@@ -51,10 +52,23 @@ class EasyPayApi {
 		$vCurrentAppId = $this->AppId[$vCurrentHour];
 		return $vCurrentAppId;
 	}
+	   
+	public function getCurrentAppId() {
+		return $this->CurrentAppId;
+	} 
+
+    public function setCurrentAppId($value) {
+        $this->CurrentAppId = $value;        
+    }
+
 	
 	public function getProxyUrl() {
 		return $this->ProxyUrl;
 	} 
+
+    public function setProxyUrl($value) {
+        $this->ProxyUrl = $value;        
+    }
 
     public function init() {
         $result = $this->isInited();
@@ -74,7 +88,7 @@ class EasyPayApi {
             $currentDT = new \DateTime("now") ;
             $expiresDT = new \DateTime($this->inExpires);
             if ($currentDT <  $expiresDT ) {
-                $this->Last_error = null;
+                $this->LastError = null;
                 $result = true;
             }
         }
@@ -89,12 +103,12 @@ class EasyPayApi {
         $result = false;
         try {
             $vAuth = \sprintf('%s %s', $this->Token_type, $this->Access_token);
-            $client = new \GuzzleHttp\Client(['base_uri' => self::base_url]);
+            $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
             $vReqId = $this->getRequestedSessionId();
             $vPageId = $this->getPageId();
             $response = $client->request('GET', '/api/wallets/get', [
                 'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json',
-                    'AppId' => $this->getAppId(), 'Authorization' => $vAuth,
+                    'AppId' => $this->getCurrentAppId(), 'Authorization' => $vAuth,
                     'PartnerKey' => self::PartnerKey, 'RequestedSessionId' => $vReqId,
                     'PageId' => $vPageId, 'Locale' => 'Ua']]);
             $code = $response->getStatusCode();
@@ -103,7 +117,7 @@ class EasyPayApi {
                 $result = true;
             }
         } catch (Exception $e) {
-            $this->Last_error = $e->getMessage();
+            $this->LastError = $e->getMessage();
         }
         return $result;
     }
@@ -126,13 +140,13 @@ class EasyPayApi {
         try {
             //$payload = \sprintf('color=#D7CCC8&name="%s"', $pWalletName);
             $vAuth = \sprintf('%s %s', $this->Token_type, $this->Access_token);
-            $client = new \GuzzleHttp\Client(['base_uri' => self::base_url]);
+            $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
             $vReqId = $this->getRequestedSessionId();
             $vPageId = $this->getPageId();
             $response = $client->request('POST', '/api/wallets/add', [
                 \GuzzleHttp\RequestOptions::JSON => ['color' => '#D7CCC8', 'name' => $pWalletName ],
                 'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json',
-                    'AppId' => $this->getAppId(), 'Authorization' => $vAuth,
+                    'AppId' => $this->getCurrentAppId(), 'Authorization' => $vAuth,
                     'PartnerKey' => self::PartnerKey, 'RequestedSessionId' => $vReqId,
                     'PageId' => $vPageId, 'Locale' => 'Ua']]);
             $code = $response->getStatusCode();
@@ -144,11 +158,11 @@ class EasyPayApi {
                 }
                 else
                 {
-                    $this->Last_error = $addResult["error"];
+                    $this->LastError = $addResult["error"];
                 };
             }
         } catch (Exception $e) {
-            $this->Last_error = $e->getMessage();
+            $this->LastError = $e->getMessage();
         }
         return $result;
     }
@@ -174,7 +188,7 @@ class EasyPayApi {
                     . "<script>$( function() \{$( \"#dialog\" ).dialog();} );</script>", $vNewWallet['name'], $vNewWallet['number']);     
         } else {
             $vHtml = \sprintf("<div id=\"dialog\" title=\"Error create wallet!\">
-                            <p>Error message:%s</p></div><script>$( function() \{$( \"#dialog\" ).dialog();} );</script>", $this->getLast_error()); 
+                            <p>Error message:%s</p></div><script>$( function() \{$( \"#dialog\" ).dialog();} );</script>", $this->getLastError()); 
         }
         return $vHtml;        
     }
@@ -183,13 +197,13 @@ class EasyPayApi {
         $result = false;
         try {
             $payload = \sprintf('client_id=easypay-v2-android&grant_type=password&username=%s&password=%s', $this->User, $this->Password);
-            $client = new \GuzzleHttp\Client(['base_uri' => self::base_url]);
+            $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
             $vReqId = $this->getRequestedSessionId();
             $vPageId = $this->getPageId();
             $response = $client->request('POST', '/api/token', [
                 'body' => $payload,
                 'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json',
-                    'AppId' => $this->getAppId(), 'No-Authentication' => true,
+                    'AppId' => $this->getCurrentAppId(), 'No-Authentication' => true,
                     'PartnerKey' => self::PartnerKey, 'RequestedSessionId' => $vReqId,
                     'PageId' => $vPageId, 'Locale' => 'Ua'], 'proxy' => $this->getProxyUrl(), 
 			
@@ -197,31 +211,54 @@ class EasyPayApi {
             $code = $response->getStatusCode();
             if ($code === 200) {
                 $this->processResponse($response);
-                $this->Last_error = null;
+                $this->LastError = null;
                 $result = true;
             }
         } catch (\GuzzleHttp\Exception\RequestException $gexc) {
-            $this->Last_error = \sprintf('Error on getting token:%s', $gexc->getMessage());
+            $this->LastError = \sprintf('Error on getting token:%s', $gexc->getMessage());
         }
         return $result;
     }
 
     public function getSession() {
         $result = false;
-        try {
-            $client = new \GuzzleHttp\Client(['base_uri' => self::base_url]);
-            $response = $client->request('POST', '/api/system/createSession', [
-                'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json', 
-				'AppId' => $this->getAppId()]]);
-            $code = $response->getStatusCode();
-            if ($code === 200) {
-                $this->processResponse($response);
-                $this->Last_error = null;
-                $result = true;
+        if ($this->createAppId()){
+            try {
+                $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
+                $response = $client->request('POST', '/api/system/createSession', [
+                    'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json', 
+    				'AppId' => $this->getCurrentAppId()]]);
+                $code = $response->getStatusCode();
+                if ($code === 200) {
+                    $this->processResponse($response);
+                    $this->LastError = null;
+                    $result = true;
+                }
+            } catch (\GuzzleHttp\Exception\RequestException $gexc) {
+                    $this->LastError = \sprintf('Error getting session:%s', $gexc->getMessage());
             }
-        } catch (\GuzzleHttp\Exception\RequestException $gexc) {
-                $this->Last_error = \sprintf('Error getting session:%s', $gexc->getMessage());
-        }
+        };
+        return $result;
+    }
+
+    public function createAppId() {
+        $result = !empty($this->getCurrentAppId());
+        if (!$result) {
+            try {
+                $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
+                $response = $client->request('POST', '/api/system/createApp', [
+                    'headers' => ['User-Agent' => $this->getUserAgent(), 
+                    'Content-Type' => 'application/json'  ,'Accept' => 'application/json' ]]);
+                $code = $response->getStatusCode();
+                if ($code === 200) {
+                    $this->processResponse($response);
+                    $this->LastError = null;
+                    $result = true;
+                }
+            } catch (\GuzzleHttp\Exception\RequestException $gexc) {
+                    $this->LastError = \sprintf('Error creating appid:%s', $gexc->getMessage());
+            };
+        };
         return $result;
     }
 
@@ -237,6 +274,9 @@ class EasyPayApi {
         $data = \GuzzleHttp\json_decode($json, true);
         foreach ($data as $key => $value) {
             switch ($key) {
+                case 'appId':
+                    $this->CurrentAppId = $value;
+                    break;
                 case 'requestedSessionId':
                     $this->RequestedSessionId = $value;
                     break;
@@ -292,12 +332,12 @@ class EasyPayApi {
             foreach ($this->Wallets as $cWallet) {
                 if ($cWallet['number'] === $walletAddress ) {
                     $result = $cWallet['balance'];
-                    $this->setLast_error(null);
+                    $this->setLastError(null);
                     return $result;
                 }
             }
         }
-        if (FALSE === $result) { $this->setLast_error("Wallet not found!"); };
+        if (FALSE === $result) { $this->setLastError("Wallet not found!"); };
         return $result;
     }
 
@@ -313,7 +353,7 @@ class EasyPayApi {
             };
             $vHtml .= \sprintf('%s</tbody></table>', $vRows);
         } else {
-            $vHtml = \sprintf("Произошла ошибка:%s", $this->getLast_error());
+            $vHtml = \sprintf("Произошла ошибка:%s", $this->getLastError());
         };
         return $vHtml;
     }
@@ -326,12 +366,12 @@ class EasyPayApi {
         return $this->PageId;
     }
 
-    public function getLast_error() {
-        return $this->Last_error;
+    public function getLastError() {
+        return $this->LastError;
     }
 
-    public function setLast_error($Last_error) {
-        $this->Last_error = $Last_error;
+    public function setLastError($pMessage) {
+        $this->LastError = $pMessage;
     }
 
 }
