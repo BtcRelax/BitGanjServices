@@ -112,6 +112,7 @@ class EasyPayApi {
     public function getWalletByInstrumentId($pInstrumentId)    {
         $result= $this->actionGetWallets();
         if ($result) {
+            $result = false;
             foreach ($this->Wallets as $value) {
             if ($value['instrumentId'] === $pInstrumentId) {
                     $result = $value;
@@ -122,12 +123,13 @@ class EasyPayApi {
         return $result;
     }
     
-    public function getInstrumentIdByWallet($pWalletNumber) {
+    public function getWalletByNumber($pWalletNumber) {
         $result= $this->actionGetWallets();
         if ($result) {
+            $result = false;
             foreach ($this->Wallets as $value) {
             if ($value['number'] === $pWalletNumber) {
-                    $result = $value['instrumentId'];
+                    $result = $value;
                     break;
                 }
             }
@@ -169,13 +171,14 @@ class EasyPayApi {
     public function deleteWalletByNumber($pWalletNumber){
         $result = false;
         try {
-            $vInstrumentId = $this->getInstrumentIdByWallet($pWalletNumber);
-            if (FALSE != $vInstrumentId) {
+            $vWallet = $this->getWalletByNumber($pWalletNumber);
+            if (FALSE != $vWallet) {
+                $vWalletId = $vWallet['id'];
                 $vAuth = \sprintf('%s %s', $this->Token_type, $this->Access_token);
                 $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
                 $vReqId = $this->getRequestedSessionId();
                 $vPageId = $this->getPageId();
-                $vURI = \sprintf("/api/wallets/delete/%s",$vInstrumentId);
+                $vURI = \sprintf("/api/wallets/delete/%s",$vWalletId);
                 $response = $client->request('DELETE', $vURI, [
                     'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json',
                         'AppId' => $this->getCurrentAppId(), 'Authorization' => $vAuth,
