@@ -1,6 +1,6 @@
 <?php namespace BtcRelax;
 
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 use GuzzleHttp\Client;
 
 

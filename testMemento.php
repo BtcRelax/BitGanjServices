@@ -1,6 +1,6 @@
 <?php 
-require 'MementoApi.php';
-$vApi = new \BtcRelax\MementoApi('memento.bitganj.website',8080);
+require '../src/MementoApi.php';
+$vApi = new \BtcRelax\MementoApi('memento.fastfen.club',8080);
 $vResult = $vApi->getLibraries();
 echo \sprintf("Result of getLibraries:<font color='red'>%s</font>\n<br>", $vResult ? 'true': 'false' );
 echo \sprintf("Result of getLastError:<font color='red'>%s</font>\n<br>", $vApi->getLastError());
