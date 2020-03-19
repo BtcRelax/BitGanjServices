@@ -1,6 +1,4 @@
 <?php namespace BtcRelax;
-require_once ('../vendor/autoload.php');
-
 
 class EasyPayApi {
   

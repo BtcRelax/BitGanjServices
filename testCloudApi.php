@@ -1,4 +1,7 @@
 <?php
+require '../src/CloudApi.php';
+
+$vCloud = new \BtcRelax\CloudApi('cloud.fastfen.club', 80);
 
 $curl = curl_init();
 

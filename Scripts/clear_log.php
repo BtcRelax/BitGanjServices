@@ -1,2 +1,3 @@
 <?php
 unlink('/logs/*.*');
+phpinfo();

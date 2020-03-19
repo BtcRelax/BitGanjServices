@@ -1,7 +1,6 @@
 <?php namespace BtcRelax;
-require 'vendor/autoload.php';
 
-class  MementoApi  {
+class  CloudApi  {
 	protected $serverUrl;
 	protected $serverPort;
 	protected $session = null;

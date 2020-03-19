@@ -1,5 +1,6 @@
 <?php 
-require '../src/MementoApi.php';
+require_once ('vendor/autoload.php');
+require 'src/MementoApi.php';
 $vApi = new \BtcRelax\MementoApi('memento.fastfen.club',8080);
 $vResult = $vApi->getLibraries();
 echo \sprintf("Result of getLibraries:<font color='red'>%s</font>\n<br>", $vResult ? 'true': 'false' );
