@@ -1,11 +1,11 @@
 <?php namespace BtcRelax;
-require_once ('../vendor/autoload.php');
+require_once 'vendor/autoload.php';
 
-
-class EasyPayApi {
+class EasyPayApi
+{
   
-    const base_url = 'https://api.easypay.ua/';
-    const PartnerKey = 'easypay-v2-android';
+    const BASE_URL = 'https://api.easypay.ua/';
+    const PARTHNER_KEY = 'easypay-v2-android';
 
     protected $RequestedSessionId;
     protected $PageId;
@@ -21,13 +21,14 @@ class EasyPayApi {
     protected $inIssued;
     protected $inExpires;
     protected $Wallets;
-    protected $_isHideMainWallet = false;
-    protected $_localExpires;
-	protected $UserAgent = 'okhttp/3.9.0';
-	protected $ProxyUrl = '217.27.151.75:34935';
+    protected $isHideMainWallet = false;
+    protected $localExpires;
+    protected $UserAgent = 'okhttp/3.9.0';
+    protected $ProxyUrl = 'Selgod:Q0a0LfB@185.166.216.90:45785';
     protected $CurrentAppId = null;
 
-    public function __construct($pUser, $pPassword) {
+    public function __construct($pUser, $pPassword) 
+    {
         $this->User = $pUser;
         $this->Password = $pPassword;
         if (empty($pUser) || empty($pPassword)) {
@@ -35,23 +36,26 @@ class EasyPayApi {
         };
         $this->setIsHideMainWallet(true);
     }
-	
-	public function getUserAgent() {
-		return $this->UserAgent;
-	}
-	
-	public function getCurrentAppId() {
-		return $this->CurrentAppId;
-	} 
+    
+    public function getUserAgent() 
+    {
+        return $this->UserAgent;
+    }
 
-    public function setCurrentAppId($value) {
+    public function getCurrentAppId() 
+    {
+        return $this->CurrentAppId;
+    } 
+
+    public function setCurrentAppId($value) 
+    {
         $this->CurrentAppId = $value;        
     }
 
-	
-	public function getProxyUrl() {
-		return $this->ProxyUrl;
-	} 
+    public function getProxyUrl() 
+    {
+        return $this->ProxyUrl;
+    } 
 
     public function setProxyUrl($value) {
         $this->ProxyUrl = $value;        
@@ -90,13 +94,13 @@ class EasyPayApi {
         $result = false;
         try {
             $vAuth = \sprintf('%s %s', $this->Token_type, $this->Access_token);
-            $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
+            $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::BASE_URL]);
             $vReqId = $this->getRequestedSessionId();
             $vPageId = $this->getPageId();
             $response = $client->request('GET', '/api/wallets/get', [
                 'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json',
                     'AppId' => $this->getCurrentAppId(), 'Authorization' => $vAuth,
-                    'PartnerKey' => self::PartnerKey, 'RequestedSessionId' => $vReqId,
+                    'PartnerKey' => self::PARTHNER_KEY, 'RequestedSessionId' => $vReqId,
                     'PageId' => $vPageId, 'Locale' => 'Ua']]);
             $code = $response->getStatusCode();
             if ($code === 200) {
@@ -141,56 +145,45 @@ class EasyPayApi {
         $result = false;
         try {
             $vAuth = \sprintf('%s %s', $this->Token_type, $this->Access_token);
-            $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
+            $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::BASE_URL]);
             $vReqId = $this->getRequestedSessionId();
             $vPageId = $this->getPageId();
-            $response = $client->request('POST', '/api/wallets/add', [
-                \GuzzleHttp\RequestOptions::JSON => ['color' => '#D7CCC8', 'name' => $pWalletName ],
-                'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json',
-                    'AppId' => $this->getCurrentAppId(), 'Authorization' => $vAuth,
-                    'PartnerKey' => self::PartnerKey, 'RequestedSessionId' => $vReqId,
-                    'PageId' => $vPageId, 'Locale' => 'Ua']]);
+            $response = $client->request('POST', '/api/wallets/add', [\GuzzleHttp\RequestOptions::JSON => ['color' => '#D7CCC8', 'name' => $pWalletName ],'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json','AppId' => $this->getCurrentAppId(), 'Authorization' => $vAuth,'PartnerKey' => self::PARTHNER_KEY, 'RequestedSessionId' => $vReqId, 'PageId' => $vPageId, 'Locale' => 'Ua', 'proxy' => $this->getProxyUrl() ]]);
             $code = $response->getStatusCode();
             if ($code === 200) {
                 $addResult = $this->processAddResponse($response);
-                if (empty($addResult["error"]))
-                {
+                if (empty($addResult["error"])) {
                     $result = $addResult['instrumentId'];
-                }
-                else
-                {
+                } else {
                     $this->LastError = $addResult["error"];
                 };
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->setLastError(\sprintf("Error while creating wallet named:%s with message:%s", $pWalletName, $e->getMessage()));
         }
         return $result;
     }
     
-    public function deleteWalletByNumber($pWalletNumber){
+    public function deleteWalletByNumber($pWalletNumber)
+    {
         $result = false;
         try {
             $vWallet = $this->getWalletByNumber($pWalletNumber);
-            if (FALSE != $vWallet) {
+            if ($vWallet !== false) {
                 $vWalletId = $vWallet['id'];
                 $vAuth = \sprintf('%s %s', $this->Token_type, $this->Access_token);
-                $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
+                $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::BASE_URL]);
                 $vReqId = $this->getRequestedSessionId();
                 $vPageId = $this->getPageId();
-                $vURI = \sprintf("/api/wallets/delete/%s",$vWalletId);
-                $response = $client->request('DELETE', $vURI, [
-                    'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json',
-                        'AppId' => $this->getCurrentAppId(), 'Authorization' => $vAuth,
-                        'PartnerKey' => self::PartnerKey, 'RequestedSessionId' => $vReqId,
-                        'PageId' => $vPageId, 'Locale' => 'Ua']]);
+                $vURI = \sprintf("/api/wallets/delete/%s", $vWalletId);
+                $response = $client->request('DELETE', $vURI, ['headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json','AppId' => $this->getCurrentAppId(), 'Authorization' => $vAuth,'PartnerKey' => self::PARTHNER_KEY, 'RequestedSessionId' => $vReqId,'PageId' => $vPageId, 'Locale' => 'Ua', 'proxy' => $this->getProxyUrl()]]);
                 $code = $response->getStatusCode();
                 if ($code === 200) {
                         $result = true;
                         $this->setLastError();
                 } else { $this->setLastError(\sprintf("Error while deleting wallet number:%s with message:%s", $pWalletNumber, $response->getBody())); };              
             } else { $this->setLastError(\sprintf("Cant find instrument id by wallet number:%s",$pWalletNumber)); }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->setLastError(\sprintf("Error while deleting wallet number:%s with message:%s", $pWalletNumber, $e->getMessage()));
         }
         return $result;        
@@ -227,16 +220,15 @@ class EasyPayApi {
         $result = false;
         try {
             $payload = \sprintf('client_id=easypay-v2-android&grant_type=password&username=%s&password=%s', $this->User, $this->Password);
-            $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
+            $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::BASE_URL]);
             $vReqId = $this->getRequestedSessionId();
             $vPageId = $this->getPageId();
             $response = $client->request('POST', '/api/token', [
                 'body' => $payload,
                 'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json',
                     'AppId' => $this->getCurrentAppId(), 'No-Authentication' => true,
-                    'PartnerKey' => self::PartnerKey, 'RequestedSessionId' => $vReqId,
+                    'PartnerKey' => self::PARTHNER_KEY, 'RequestedSessionId' => $vReqId,
                     'PageId' => $vPageId, 'Locale' => 'Ua'], 'proxy' => $this->getProxyUrl(), 
-			
             ]);
             $code = $response->getStatusCode();
             if ($code === 200) {
@@ -254,10 +246,8 @@ class EasyPayApi {
         $result = false;
         if ($this->createAppId()){
             try {
-                $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
-                $response = $client->request('POST', '/api/system/createSession', [
-                    'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json', 
-    				'AppId' => $this->getCurrentAppId()]]);
+                $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::BASE_URL]);
+                $response = $client->request('POST', '/api/system/createSession', ['headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json', 'AppId' => $this->getCurrentAppId(), 'proxy' => $this->getProxyUrl(),]]);
                 $code = $response->getStatusCode();
                 if ($code === 200) {
                     $this->processResponse($response);
@@ -275,7 +265,7 @@ class EasyPayApi {
         $result = !empty($this->getCurrentAppId());
         if (!$result) {
             try {
-                $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::base_url]);
+                $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::BASE_URL]);
                 $response = $client->request('POST', '/api/system/createApp', [
                     'headers' => ['User-Agent' => $this->getUserAgent(), 
                     'Content-Type' => 'application/json'  ,'Accept' => 'application/json' ]]);
@@ -321,7 +311,7 @@ class EasyPayApi {
                     break;
                 case 'expires_in':
                     $this->Expires = $value;
-                    $this->_localExpires = time() + $value;
+                    $this->localExpires = time() + $value;
                     break;
                 case 'refresh_token':
                     $this->Refresh_token = $value;

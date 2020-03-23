@@ -45,11 +45,22 @@ class ComposerStaticInita052a78ff4bd35588b260aaf8025b5ac
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'B' => 
+        array (
+            'BtcRelax' => 
+            array (
+                0 => __DIR__ . '/../..' . '/src',
+            ),
+        ),
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInita052a78ff4bd35588b260aaf8025b5ac::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInita052a78ff4bd35588b260aaf8025b5ac::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInita052a78ff4bd35588b260aaf8025b5ac::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }
