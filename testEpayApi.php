@@ -1,10 +1,10 @@
 <?php
-require '../src/EasyPayApi.php';
+require '/src/EasyPayApi.php';
 if (isset($_GET["user"]) && isset($_GET["pass"])) {
     $vUser = $_GET["user"];
     $vPass = $_GET["pass"];
-        try {
-            $vApi = new \BtcRelax\EasyPayApi($vUser,$vPass);
+    try {
+            $vApi = new \BtcRelax\EasyPayApi($vUser, $vPass);
             if (isset($_GET["proxy"])) {
                 $vProxy = $_GET["proxy"];
                 $vApi->setProxyUrl($vProxy);
