@@ -1,8 +1,4 @@
 <?php
-<<<<<<< HEAD
-require_once ('vendor/autoload.php');
-=======
->>>>>>> 4c7c30ea63082d6161cd95c3bd2bf27642682d8d
 require 'src/EasyPayApi.php';
 if (isset($_GET["user"]) && isset($_GET["pass"])) {
     $vUser = $_GET["user"];
@@ -30,7 +26,7 @@ if (isset($_GET["user"]) && isset($_GET["pass"])) {
                     echo (\sprintf("Getting wallet number: %s\n<br>", $vNewWalletNumber));
                     $vDeleteResult = $vApi->deleteWalletByNumber($vNewWalletNumber);
                     echo (\sprintf("Delete wallet by number:%s, result: %s\n<br>", $vNewWalletNumber, $vDeleteResult));
-            }
+            } else { echo $vApi->getLastError(); }
         }
     } catch (Exception $exc) {
             echo \sprintf("Error creating EasyPay api:%s", $exc->getMessage()); 

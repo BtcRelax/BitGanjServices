@@ -1,14 +1,8 @@
 <?php namespace BtcRelax;
-<<<<<<< HEAD
-
-class EasyPayApi {
-=======
 require_once 'vendor/autoload.php';
 
 class EasyPayApi
 {
->>>>>>> 4c7c30ea63082d6161cd95c3bd2bf27642682d8d
-  
     const BASE_URL = 'https://api.easypay.ua/';
     const PARTHNER_KEY = 'easypay-v2-android';
 
@@ -106,7 +100,7 @@ class EasyPayApi
                 'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json',
                     'AppId' => $this->getCurrentAppId(), 'Authorization' => $vAuth,
                     'PartnerKey' => self::PARTHNER_KEY, 'RequestedSessionId' => $vReqId,
-                    'PageId' => $vPageId, 'Locale' => 'Ua']]);
+                    'PageId' => $vPageId, 'Locale' => 'Ua', 'proxy' => $this->getProxyUrl() ]]);
             $code = $response->getStatusCode();
             if ($code === 200) {
                 $this->processResponse($response);
@@ -233,14 +227,13 @@ class EasyPayApi
                 'headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json',
                     'AppId' => $this->getCurrentAppId(), 'No-Authentication' => true,
                     'PartnerKey' => self::PARTHNER_KEY, 'RequestedSessionId' => $vReqId,
-                    'PageId' => $vPageId, 'Locale' => 'Ua'], 'proxy' => $this->getProxyUrl(), 
-            ]);
+                    'PageId' => $vPageId, 'Locale' => 'Ua', 'proxy' => $this->getProxyUrl() ]]);
             $code = $response->getStatusCode();
             if ($code === 200) {
                 $this->processResponse($response);
                 $this->LastError = null;
                 $result = true;
-            }
+            } else { $this->LastError = \sprintf('Error on getting token: %s -%s', $code , $response->getBody() ); }
         } catch (\GuzzleHttp\Exception\RequestException $gexc) {
             $this->LastError = \sprintf('Error on getting token:%s', $gexc->getMessage());
         }
@@ -252,7 +245,7 @@ class EasyPayApi
         if ($this->createAppId()){
             try {
                 $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::BASE_URL]);
-                $response = $client->request('POST', '/api/system/createSession', ['headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json', 'AppId' => $this->getCurrentAppId(), 'proxy' => $this->getProxyUrl(),]]);
+                $response = $client->request('POST', '/api/system/createSession', ['headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json', 'AppId' => $this->getCurrentAppId(), 'proxy' => $this->getProxyUrl() ]]);
                 $code = $response->getStatusCode();
                 if ($code === 200) {
                     $this->processResponse($response);
@@ -273,7 +266,7 @@ class EasyPayApi
                 $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::BASE_URL]);
                 $response = $client->request('POST', '/api/system/createApp', [
                     'headers' => ['User-Agent' => $this->getUserAgent(), 
-                    'Content-Type' => 'application/json'  ,'Accept' => 'application/json' ]]);
+                    'Content-Type' => 'application/json'  ,'Accept' => 'application/json', 'proxy' => $this->getProxyUrl() ]]);
                 $code = $response->getStatusCode();
                 if ($code === 200) {
                     $this->processResponse($response);
