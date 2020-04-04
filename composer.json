@@ -8,6 +8,7 @@
             "email": "godjah@bitganj.website"
         }
     ],
+    "version":"0.1",
     "minimum-stability": "dev",
     "require": {
         "guzzlehttp/guzzle": "^6.0"
