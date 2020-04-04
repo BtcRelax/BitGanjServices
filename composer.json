@@ -2,6 +2,8 @@
     "name": "btcrelax/services-api",
     "description": "Library to control exteranal systems",
     "type": "library",
+    "homepage": "https://github.com/BtcRelax/BitGanjServices",
+	"license": "Unlicense",
     "authors": [
         {
             "name": "stgodjah",
