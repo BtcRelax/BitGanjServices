@@ -41,7 +41,7 @@ class EasyPayApi
     protected $isHideMainWallet = false;
     protected $localExpires;
     protected $UserAgent = 'okhttp/3.9.0';
-    protected $ProxyUrl = 'Selgod:Q0a0LfB@185.166.216.90:45785';
+    protected $ProxyUrl = 'ZwnyZE:FEwjc1@193.228.55.76:8000';
     protected $CurrentAppId = null;
 
 
