@@ -24,21 +24,7 @@ class EasyPayApi
     const BASE_URL = 'https://api.easypay.ua/';
     const PARTHNER_KEY = 'easypay-v2-android';
 
-    protected $RequestedSessionId;
-    protected $PageId;
-    protected $LastError = '';
-    protected $User;
-    protected $Password;
-    protected $Access_token;
-    protected $Token_type;
-    protected $Expires;
-    protected $Refresh_token;
-    protected $UserId;
-    protected $ClientId;
-    protected $inIssued;
-    protected $inExpires;
-    protected $Wallets;
-    protected $isHideMainWallet = false;
+
     protected $localExpires;
     protected $UserAgent = 'okhttp/3.9.0';
     protected $ProxyUrl = 'ZwnyZE:FEwjc1@193.228.55.76:8000';
