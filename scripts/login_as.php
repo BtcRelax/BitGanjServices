@@ -1,4 +1,4 @@
-<?php require('../../BtcRelax/core.inc');
+<?php require('BtcRelax/core.inc');
 $core = \BtcRelax\Core::getIstance();
 $vAM = \BtcRelax\Core::createAM();
 $vCurrentSession = $vAM->getCurrentSession();
