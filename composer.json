@@ -3,17 +3,16 @@
     "description": "Library to control exteranal systems",
     "type": "library",
     "homepage": "https://github.com/BtcRelax/BitGanjServices",
-	"license": "Unlicense",
+    "license": "Unlicense",
     "authors": [
         {
             "name": "stgodjah",
-            "email": "godjah@bitganj.website"
+            "email": "god@fastfen.club"
         }
     ],
-    "version":"1.0.0",
-    "minimum-stability": "dev",
     "require": {
-        "guzzlehttp/guzzle": "6.3.1"
+            "php": "^7.4",
+            "guzzlehttp/guzzle": "*"
     },
     "autoload":{
     "psr-0":{
