@@ -11,7 +11,7 @@
             $vLhcApi->setDepartment(1);
             //$vLhcApi->setThema();
             $vLhcApi->setUserNameAlias("TestUserName");
-            echo $vLhcApi->fillChatWidget('CustomerId', true ,  'https://help.bitganj.website' );
+            echo $vLhcApi->fillChatWidget('CustomerId', true, 'https://help.bitganj.website');
         ?>
     </body>
 </html>
