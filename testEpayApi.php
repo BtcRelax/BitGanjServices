@@ -4,32 +4,34 @@ if (isset($_GET["user"]) && isset($_GET["pass"])) {
     $vUser = $_GET["user"];
     $vPass = $_GET["pass"];
     try {
-            $vApi = new \BtcRelax\EasyPayApi($vUser, $vPass);
+        $vApi = new \BtcRelax\EasyPayApi($vUser, $vPass);
         if (isset($_GET["proxy"])) {
-                $vProxy = $_GET["proxy"];
-                $vApi->setProxyUrl($vProxy);
+            $vProxy = $_GET["proxy"];
+            $vApi->setProxyUrl($vProxy);
         }
-            $vGetSessionRes = $vApi->getSession();
-            echo \sprintf("Result create session:%s\n<br>", $vGetSessionRes);
+        $vGetSessionRes = $vApi->getSession();
+        echo \sprintf("Result create session:%s\n<br>", $vGetSessionRes);
         if ($vGetSessionRes) {
-                echo \sprintf("Generated app id:%s\n<br>", $vApi->getCurrentAppId());
-                $vGetTokenResult = $vApi->getToken();
-                echo \sprintf("Result GetTokenResult:%s\n<br>", $vGetTokenResult);
+            echo \sprintf("Generated app id:%s\n<br>", $vApi->getCurrentAppId());
+            $vGetTokenResult = $vApi->getToken();
+            echo \sprintf("Result GetTokenResult:%s\n<br>", $vGetTokenResult);
             if ($vGetTokenResult) {
-                    $vNewName = substr(str_shuffle(md5(time())), 0, 5);
-                    $vNewWalletInstrumentId = $vApi->addWallet($vNewName);
-                    echo \sprintf("Try to create new wallet name:%s\n<br> Got result:%s\n<br>", $vNewName, $vNewWalletInstrumentId);
-                    echo ("Rendering wallets:");
-                    echo $vApi->renderGetWallets();
-                    $vNewWallet = $vApi->getWalletByInstrumentId($vNewWalletInstrumentId);
-                    $vNewWalletNumber = $vNewWallet['number'];
-                    echo (\sprintf("Getting wallet number: %s\n<br>", $vNewWalletNumber));
-                    $vDeleteResult = $vApi->deleteWalletByNumber($vNewWalletNumber);
-                    echo (\sprintf("Delete wallet by number:%s, result: %s\n<br>", $vNewWalletNumber, $vDeleteResult));
-            } else { echo $vApi->getLastError(); }
+                $vNewName = substr(str_shuffle(md5(time())), 0, 5);
+                $vNewWalletInstrumentId = $vApi->addWallet($vNewName);
+                echo \sprintf("Try to create new wallet name:%s\n<br> Got result:%s\n<br>", $vNewName, $vNewWalletInstrumentId);
+                echo("Rendering wallets:");
+                echo $vApi->renderGetWallets();
+                $vNewWallet = $vApi->getWalletByInstrumentId($vNewWalletInstrumentId);
+                $vNewWalletNumber = $vNewWallet['number'];
+                echo(\sprintf("Getting wallet number: %s\n<br>", $vNewWalletNumber));
+                $vDeleteResult = $vApi->deleteWalletByNumber($vNewWalletNumber);
+                echo(\sprintf("Delete wallet by number:%s, result: %s\n<br>", $vNewWalletNumber, $vDeleteResult));
+            } else {
+                echo $vApi->getLastError();
+            }
         }
     } catch (Exception $exc) {
-            echo \sprintf("Error creating EasyPay api:%s", $exc->getMessage()); 
+        echo \sprintf("Error creating EasyPay api:%s", $exc->getMessage());
     }
 } else { ?>
 <form action="#" autocomplete="on" >
@@ -44,5 +46,4 @@ if (isset($_GET["user"]) && isset($_GET["pass"])) {
     <input type="hidden" name="debug_port" value="10137">
   <input type="submit" value="Submit">
 </form>    
-<?php } 
-        
+<?php }

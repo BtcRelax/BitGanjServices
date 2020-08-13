@@ -1,7 +1,8 @@
-<?php 
+<?php
 namespace BtcRelax;
+
 /**
- * EasyPayApi Class 
+ * EasyPayApi Class
  *
  * @category Class
  * @package  BitGanjServices
@@ -11,7 +12,7 @@ namespace BtcRelax;
  */
 require_once 'vendor/autoload.php';
 /**
- * EasyPayApi Class 
+ * EasyPayApi Class
  *
  * @category PaymentProvidersApiClass
  * @package  BitGanjServices
@@ -45,7 +46,7 @@ class EasyPayApi
     protected $CurrentAppId = null;
 
 
-    public function __construct($pUser, $pPassword) 
+    public function __construct($pUser, $pPassword)
     {
         $this->User = $pUser;
         $this->Password = $pPassword;
@@ -55,32 +56,33 @@ class EasyPayApi
         $this->setIsHideMainWallet(true);
     }
     
-    public function getUserAgent() 
+    public function getUserAgent()
     {
         return $this->UserAgent;
     }
 
-    public function getCurrentAppId() 
+    public function getCurrentAppId()
     {
         return $this->CurrentAppId;
-    } 
-
-    public function setCurrentAppId($value) 
-    {
-        $this->CurrentAppId = $value;        
     }
 
-    public function getProxyUrl() 
+    public function setCurrentAppId($value)
+    {
+        $this->CurrentAppId = $value;
+    }
+
+    public function getProxyUrl()
     {
         return $this->ProxyUrl;
-    } 
-
-    public function setProxyUrl($value) 
-    {
-        $this->ProxyUrl = $value;        
     }
 
-    public function init() {
+    public function setProxyUrl($value)
+    {
+        $this->ProxyUrl = $value;
+    }
+
+    public function init()
+    {
         $result = $this->isInited();
         if (!$result) {
             if ($this->getSession()) {
@@ -94,10 +96,10 @@ class EasyPayApi
 
     /**
      *  Summ of every wallet balance in current account
-     * 
+     *
      * @return : number
      */
-    public function getTotalBalance() 
+    public function getTotalBalance()
     {
         $vResult = 0;
         $this->getWallets();
@@ -111,13 +113,13 @@ class EasyPayApi
      *  Check are session already initiated?
      *  @result - return true if session started and not expired
      */
-    public function isInited() 
+    public function isInited()
     {
         $result = false;
         if (!empty($this->inExpires)) {
             $currentDT = new \DateTime("now");
             $expiresDT = new \DateTime($this->inExpires);
-            if ($currentDT <  $expiresDT ) {
+            if ($currentDT <  $expiresDT) {
                 $this->LastError = null;
                 $result = true;
             }
@@ -125,11 +127,12 @@ class EasyPayApi
         return $result;
     }
 
-    public function setIsHideMainWallet($isHideMainWallet) {
+    public function setIsHideMainWallet($isHideMainWallet)
+    {
         $this->isHideMainWallet = $isHideMainWallet;
     }
 
-    public function getWallets() 
+    public function getWallets()
     {
         $result = false;
         try {
@@ -142,8 +145,8 @@ class EasyPayApi
             if ($code === 200) {
                 $this->processResponse($response);
                 $result = true;
-            } else { 
-                $this->setLastError(\sprintf("Result code:%s - %s", $code, $response->getBody())); 
+            } else {
+                $this->setLastError(\sprintf("Result code:%s - %s", $code, $response->getBody()));
             };
         } catch (\Exception $e) {
             $this->LastError = $e->getMessage();
@@ -151,7 +154,7 @@ class EasyPayApi
         return $result;
     }
     
-    public function getWalletByInstrumentId($pInstrumentId)    
+    public function getWalletByInstrumentId($pInstrumentId)
     {
         $result= $this->actionGetWallets();
         if ($result) {
@@ -166,7 +169,7 @@ class EasyPayApi
         return $result;
     }
     
-    public function getWalletByNumber($pWalletNumber) 
+    public function getWalletByNumber($pWalletNumber)
     {
         $result= $this->actionGetWallets();
         if ($result) {
@@ -178,10 +181,10 @@ class EasyPayApi
                 }
             }
         }
-        return $result;        
-    } 
+        return $result;
+    }
             
-    public function addWallet($pWalletName) 
+    public function addWallet($pWalletName)
     {
         $result = false;
         try {
@@ -220,18 +223,22 @@ class EasyPayApi
                 $response = $client->request('DELETE', $vURI, ['headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json','AppId' => $this->getCurrentAppId(), 'Authorization' => $vAuth,'PartnerKey' => self::PARTHNER_KEY, 'RequestedSessionId' => $vReqId,'PageId' => $vPageId, 'Locale' => 'Ua', 'proxy' => $this->getProxyUrl()]]);
                 $code = $response->getStatusCode();
                 if ($code === 200) {
-                        $result = true;
-                        $this->setLastError();
+                    $result = true;
+                    $this->setLastError();
                 } else {
-                    $this->setLastError(\sprintf("Error while deleting wallet number:%s with message:%s", $pWalletNumber, $response->getBody())); };              
-            } else { $this->setLastError(\sprintf("Cant find instrument id by wallet number:%s",$pWalletNumber)); }
+                    $this->setLastError(\sprintf("Error while deleting wallet number:%s with message:%s", $pWalletNumber, $response->getBody()));
+                };
+            } else {
+                $this->setLastError(\sprintf("Cant find instrument id by wallet number:%s", $pWalletNumber));
+            }
         } catch (\Exception $e) {
             $this->setLastError(\sprintf("Error while deleting wallet number:%s with message:%s", $pWalletNumber, $e->getMessage()));
         }
-        return $result;        
+        return $result;
     }
    
-    public function actionNewWallet($pNewWalletName) {
+    public function actionNewWallet($pNewWalletName)
+    {
         $result = false;
         $initResult = $this->init();
         if ($initResult) {
@@ -241,26 +248,28 @@ class EasyPayApi
                 $this->setLastError();
             };
         };
-        return $result;          
+        return $result;
     }
      
-    public function renderAddWallet($pWalletName) {
+    public function renderAddWallet($pWalletName)
+    {
         $addWalletResult = $this->actionNewWallet($pWalletName);
         if ($addWalletResult !== false) {
             $this->getWallets();
             $vNewWallet = $this->getWalletByInstrumentId($addWalletResult);
             $vHtml = \sprintf("<div id=\"dialog\" title=\"Wallet created!\"><p>New wallet name:%s</p><p>New wallet number:%s</p></div>"
-                    . "<script>$( function() \{$( \"#dialog\" ).dialog();} );</script>", $vNewWallet['name'], $vNewWallet['number']);     
+                    . "<script>$( function() \{$( \"#dialog\" ).dialog();} );</script>", $vNewWallet['name'], $vNewWallet['number']);
         } else {
             $vHtml = \sprintf("<div id=\"dialog\" title=\"Error create wallet!\">
-                            <p>Error message:%s</p></div><script>$( function() \{$( \"#dialog\" ).dialog();} );</script>", $this->getLastError()); 
+                            <p>Error message:%s</p></div><script>$( function() \{$( \"#dialog\" ).dialog();} );</script>", $this->getLastError());
         }
-        return $vHtml;        
+        return $vHtml;
     }
 
 
 
-    public function getToken() {
+    public function getToken()
+    {
         $result = false;
         try {
             $payload = \sprintf('client_id=easypay-v2-android&grant_type=password&username=%s&password=%s', $this->User, $this->Password);
@@ -273,17 +282,19 @@ class EasyPayApi
                 $this->processResponse($response);
                 $this->LastError = null;
                 $result = true;
-            } else { $this->LastError = \sprintf("Error on getting token: %s -%s", $code, $response->getBody() ); }
+            } else {
+                $this->LastError = \sprintf("Error on getting token: %s -%s", $code, $response->getBody());
+            }
         } catch (\GuzzleHttp\Exception\RequestException $gexc) {
             $this->LastError = \sprintf('Error on getting token:%s', $gexc->getMessage());
         }
         return $result;
     }
 
-    public function getSession() 
+    public function getSession()
     {
         $result = false;
-        if ($this->createAppId()){
+        if ($this->createAppId()) {
             try {
                 $client = new \GuzzleHttp\Client(['http_errors' => false,'base_uri' => self::BASE_URL]);
                 $response = $client->request('POST', '/api/system/createSession', ['headers' => ['User-Agent' => $this->getUserAgent(), 'Accept' => 'application/json', 'AppId' => $this->getCurrentAppId(), 'proxy' => $this->getProxyUrl() ]]);
@@ -294,13 +305,14 @@ class EasyPayApi
                     $result = true;
                 }
             } catch (\GuzzleHttp\Exception\RequestException $gexc) {
-                    $this->LastError = \sprintf('Error getting session:%s', $gexc->getMessage());
+                $this->LastError = \sprintf('Error getting session:%s', $gexc->getMessage());
             }
         };
         return $result;
     }
 
-    public function createAppId() {
+    public function createAppId()
+    {
         $result = !empty($this->getCurrentAppId());
         if (!$result) {
             try {
@@ -313,25 +325,25 @@ class EasyPayApi
                     $result = true;
                 }
             } catch (\GuzzleHttp\Exception\RequestException $gexc) {
-                    $this->LastError = \sprintf('Error creating appid:%s', $gexc->getMessage());
+                $this->LastError = \sprintf('Error creating appid:%s', $gexc->getMessage());
             };
         };
         return $result;
     }
 
-    private function processAddResponse($response) {
+    private function processAddResponse($response)
+    {
         $json = $response->getBody();
         $data = \GuzzleHttp\json_decode($json, true);
         $result = array("id"=> $data['id'] , "instrumentId" => $data['instrumentId'], "error" => $data["error"]);
         return $result;
     }
 
-    private function processResponse($response) 
+    private function processResponse($response)
     {
         $json = $response->getBody();
         $data = \GuzzleHttp\json_decode($json, true);
         $this->fillAnswer($data);
-
     }
 
     private function fillAnswer(array $pParams)
@@ -381,7 +393,8 @@ class EasyPayApi
         }
     }
 
-    public function actionGetWallets() {
+    public function actionGetWallets()
+    {
         $result = false;
         $initResult = $this->init();
         if ($initResult) {
@@ -390,29 +403,33 @@ class EasyPayApi
         return $result;
     }
     
-    public function actionGetWalletBalanceByAddress($walletAddress) {
+    public function actionGetWalletBalanceByAddress($walletAddress)
+    {
         $result = false;
         if ($this->actionGetWallets()) {
             foreach ($this->Wallets as $cWallet) {
-                if ($cWallet['number'] === $walletAddress ) {
+                if ($cWallet['number'] === $walletAddress) {
                     $result = $cWallet['balance'];
                     $this->setLastError(null);
                     return $result;
                 }
             }
         }
-        if (FALSE === $result) { $this->setLastError("Wallet not found!"); };
+        if (false === $result) {
+            $this->setLastError("Wallet not found!");
+        };
         return $result;
     }
 
-    public function renderGetWallets() {
+    public function renderGetWallets()
+    {
         if ($this->actionGetWallets()) {
             $vHtml = "<table border = \"1\" width = \"1\" cellspacing = \"3\" cellpadding = \"3\"><thead>";
             $vHtml .= "<tr><th>Тип кошелька</th><th>Instrument Id</th><th>Название кошелька</th><th>Номер кошелька</th><th>Балланс кошелька</th></tr></thead><tbody>";
             $vRows = "";
             foreach ($this->Wallets as $value) {
                 if ($this->isHideMainWallet && $value['walletType'] !== 'Current') {
-                    $vRows .= \sprintf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $value['walletType'] === 'Current' ? 'Основной' : 'Дополнительный', $value['instrumentId'] , $value['name'], $value['number'], $value['balance']);
+                    $vRows .= \sprintf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $value['walletType'] === 'Current' ? 'Основной' : 'Дополнительный', $value['instrumentId'], $value['name'], $value['number'], $value['balance']);
                 };
             };
             $vHtml .= \sprintf('%s</tbody></table>', $vRows);
@@ -422,23 +439,23 @@ class EasyPayApi
         return $vHtml;
     }
 
-    protected function getRequestedSessionId() 
+    protected function getRequestedSessionId()
     {
         return $this->RequestedSessionId;
     }
 
-    protected function getPageId() 
+    protected function getPageId()
     {
         return $this->PageId;
     }
 
-    public function getLastError() 
+    public function getLastError()
     {
         return $this->LastError;
     }
 
-    public function setLastError($pMessage = null) {
+    public function setLastError($pMessage = null)
+    {
         $this->LastError = $pMessage;
     }
-
 }

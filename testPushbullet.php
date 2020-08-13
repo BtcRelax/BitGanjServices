@@ -12,25 +12,23 @@
   <body>
 
 <?php
-	require 'vendor/autoload.php';
-	require 'src/PushbulletApi.php';
-	$vApi=new \BtcRelax\PushbulletApi();
-	$vToken=$_REQUEST["token"];
-	if(isset($vToken)){
-		$vResult=$vApi->init($vToken);
-		if($vResult){
-			echo "Pushbullet init: Ok\n<br>";
-			$vMe=$vApi->getMe();
-			$vPushRes=$vApi->pushMessage("Hello");
-			echo \sprintf("Pushing message result:%s",$vPushRes);
-		}
-		else{
-			echo \sprintf("Pushbullet init error:%s",$vApi->getLastError());
-		}
-		;
-	}
-	else{
-	?>
+    require 'vendor/autoload.php';
+    require 'src/PushbulletApi.php';
+    $vApi=new \BtcRelax\PushbulletApi();
+    $vToken=$_REQUEST["token"];
+    if (isset($vToken)) {
+        $vResult=$vApi->init($vToken);
+        if ($vResult) {
+            echo "Pushbullet init: Ok\n<br>";
+            $vMe=$vApi->getMe();
+            $vPushRes=$vApi->pushMessage("Hello");
+            echo \sprintf("Pushing message result:%s", $vPushRes);
+        } else {
+            echo \sprintf("Pushbullet init error:%s", $vApi->getLastError());
+        }
+        ;
+    } else {
+        ?>
 		<form id="paramsInputForm">
                 <div class="form-group">
                 <label for="paramsUser">Token</label>
@@ -39,8 +37,8 @@
                 <button type="submit" class="btn btn-primary">Check</button>
             </form>	
 	<?php
-}
-	;
+    }
+    ;
 ?>
   
 </body></html>
