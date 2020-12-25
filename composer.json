@@ -2,6 +2,7 @@
     "name": "btcrelax/services-api",
     "description": "Library to control exteranal systems",
     "type": "library",
+    "version": "v1.0.0",
     "homepage": "https://github.com/BtcRelax/BitGanjServices",
     "license": "Unlicense",
     "authors": [
@@ -12,7 +13,7 @@
     ],
     "require": {
             "php": "^7.4",
-            "guzzlehttp/guzzle": "*"
+            "guzzlehttp/guzzle": "* 6.3.3"
     },
     "autoload":{
     "psr-0":{
