@@ -2,7 +2,7 @@
     "name": "btcrelax/services-api",
     "description": "Library to control exteranal systems",
     "type": "library",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "homepage": "https://github.com/BtcRelax/BitGanjServices",
     "license": "Unlicense",
     "authors": [
